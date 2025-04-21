@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frank's Foreman Toolkit</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2ecc71;
+            --secondary-dark: #27ae60;
+            --dark: #34495e;
+            --light: #ecf0f1;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --accent: #9b59b6;
+            --text: #2c3e50;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin: 20px 0;
+            color: var(--dark);
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            bottom: -10px;
+            left: 25%;
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            margin: 15px 0;
+            color: var(--dark);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            background: white;
+            padding: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab.active {
+            color: white;
+            background: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: var(--light);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .toggle-label {
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            background-color: var(--primary-dark);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .areas-container {
+            margin-top: 15px;
+        }
+
+        .area-item {
+            background: var(--light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            position: relative;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .delete-area {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .delete-area:hover {
+            transform: scale(1.1);
+        }
+
+        .results {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .results h3 {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--light);
+        }
+
+        .advanced-options {
+            background: var(--light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 15px;
+            display: none;
+            animation: slideDown 0.3s ease forwards;
+        }
+
+
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+            }
+            
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+            }
+            
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Frank's Foreman Toolkit</h1>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="concrete">Concrete</button>
+            <button class="tab" data-tab="asphalt">Asphalt</button>
+        </div>
+
+        <div id="concrete-tab" class="tab-content active">
+            <div class="card">
+                <h2>Concrete Calculator</h2>
+                
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="concrete-advanced-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Advanced Options</span>
+                </div>
+
+                <div id="concrete-advanced-options" class="advanced-options">
+                    <div class="form-group">
+                        <label for="concrete-type">Concrete Type</label>
+                        <select id="concrete-type">
+                            <option value="regular">Regular (3000 PSI)</option>
+                            <option value="high-strength">High Strength (4000 PSI)</option>
+                            <option value="fiber-reinforced">Fiber Reinforced</option>
+                            <option value="quick-setting">Quick Setting</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="waste-factor">Waste Factor (%)</label>
+                        <input type="number" id="waste-factor" value="10" min="0" max="100" inputmode="numeric" pattern="[0-9]*">
+                    </div>
+                </div>
+
+                <div id="concrete-areas-container" class="areas-container">
+                    <div class="area-item" data-id="1">
+                        <div class="form-group">
+                            <label>Area 1</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="concrete-length-1">Length (ft)</label>
+                            <input type="number" id="concrete-length-1" class="concrete-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                        <div class="form-group">
+                            <label for="concrete-width-1">Width (ft)</label>
+                            <input type="number" id="concrete-width-1" class="concrete-width" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                        <div class="form-group">
+                            <label for="concrete-depth-1">Depth (in)</label>
+                            <input type="number" id="concrete-depth-1" class="concrete-depth" min="0" step="0.01" value="4" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="add-concrete-area" class="btn btn-secondary">Add Another Area</button>
+                
+                <button id="calculate-concrete" class="btn btn-block">Calculate Concrete</button>
+
+                <div id="concrete-results" class="results" style="display:none;">
+                    <h3>Concrete Required</h3>
+                    <div class="result-value" id="concrete-cubic-yards">0 yd³</div>
+                    <p>Total Area: <span id="concrete-total-area">0</span> ft²</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="asphalt-tab" class="tab-content">
+            <div class="card">
+                <h2>Asphalt Tonnage Calculator</h2>
+                
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="asphalt-advanced-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Advanced Options</span>
+                </div>
+
+                <div id="asphalt-advanced-options" class="advanced-options">
+                    <div class="form-group">
+                        <label for="asphalt-type">Asphalt Type</label>
+                        <select id="asphalt-type">
+                            <option value="hot-mix">Hot Mix (145 lb/ft³)</option>
+                            <option value="cold-mix">Cold Mix (140 lb/ft³)</option>
+                            <option value="porous">Porous (130 lb/ft³)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="compaction-factor">Compaction Factor (%)</label>
+                        <input type="number" id="compaction-factor" value="15" min="0" max="100" inputmode="numeric" pattern="[0-9]*">
+                    </div>
+                </div>
+
+                <div id="asphalt-areas-container" class="areas-container">
+                    <div class="area-item" data-id="1">
+                        <div class="form-group">
+                            <label>Area 1</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="asphalt-length-1">Length (ft)</label>
+                            <input type="number" id="asphalt-length-1" class="asphalt-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                        <div class="form-group">
+                            <label for="asphalt-width-1">Width (ft)</label>
+                            <input type="number" id="asphalt-width-1" class="asphalt-width" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                        <div class="form-group">
+                            <label for="asphalt-depth-1">Depth (in)</label>
+                            <input type="number" id="asphalt-depth-1" class="asphalt-depth" min="0" step="0.01" value="2" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="add-asphalt-area" class="btn btn-secondary">Add Another Area</button>
+                
+                <button id="calculate-asphalt" class="btn btn-block">Calculate Asphalt</button>
+
+                <div id="asphalt-results" class="results" style="display:none;">
+                    <h3>Asphalt Required</h3>
+                    <div class="result-value" id="asphalt-tons">0 tons</div>
+                    <p>Total Area: <span id="asphalt-total-area">0</span> ft²</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
+                
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update active content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+
+        // Toggle advanced options
+        document.getElementById('concrete-advanced-toggle').addEventListener('change', function() {
+            const advancedOptions = document.getElementById('concrete-advanced-options');
+            if (this.checked) {
+                advancedOptions.style.display = 'block';
+            } else {
+                advancedOptions.style.display = 'none';
+            }
+        });
+
+        document.getElementById('asphalt-advanced-toggle').addEventListener('change', function() {
+            const advancedOptions = document.getElementById('asphalt-advanced-options');
+            if (this.checked) {
+                advancedOptions.style.display = 'block';
+            } else {
+                advancedOptions.style.display = 'none';
+            }
+        });
+
+
+
+        // Add new concrete area
+        let concreteAreaCount = 1;
+        document.getElementById('add-concrete-area').addEventListener('click', function() {
+            concreteAreaCount++;
+            
+            const areaContainer = document.createElement('div');
+            areaContainer.className = 'area-item';
+            areaContainer.dataset.id = concreteAreaCount;
+            
+            areaContainer.innerHTML = `
+                <button class="delete-area">×</button>
+                <div class="form-group">
+                    <label>Area ${concreteAreaCount}</label>
+                </div>
+                <div class="form-group">
+                    <label for="concrete-length-${concreteAreaCount}">Length (ft)</label>
+                    <input type="number" id="concrete-length-${concreteAreaCount}" class="concrete-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                </div>
+                <div class="form-group">
+                    <label for="concrete-width-${concreteAreaCount}">Width (ft)</label>
+                    <input type="number" id="concrete-width-${concreteAreaCount}" class="concrete-width" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                </div>
+                <div class="form-group">
+                    <label for="concrete-depth-${concreteAreaCount}">Depth (in)</label>
+                    <input type="number" id="concrete-depth-${concreteAreaCount}" class="concrete-depth" min="0" step="0.01" value="4" inputmode="numeric" pattern="[0-9]*">
+                </div>
+            `;
+            
+            document.getElementById('concrete-areas-container').appendChild(areaContainer);
+            
+            // Add delete functionality
+            areaContainer.querySelector('.delete-area').addEventListener('click', function() {
+                areaContainer.remove();
+            });
+        });
+
+        // Add new asphalt area
+        let asphaltAreaCount = 1;
+        document.getElementById('add-asphalt-area').addEventListener('click', function() {
+            asphaltAreaCount++;
+            
+            const areaContainer = document.createElement('div');
+            areaContainer.className = 'area-item';
+            areaContainer.dataset.id = asphaltAreaCount;
+            
+            areaContainer.innerHTML = `
+                <button class="delete-area">×</button>
+                <div class="form-group">
+                    <label>Area ${asphaltAreaCount}</label>
+                </div>
+                <div class="form-group">
+                    <label for="asphalt-length-${asphaltAreaCount}">Length (ft)</label>
+                    <input type="number" id="asphalt-length-${asphaltAreaCount}" class="asphalt-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                </div>
+                <div class="form-group">
+                    <label for="asphalt-width-${asphaltAreaCount}">Width (ft)</label>
+                    <input type="number" id="asphalt-width-${asphaltAreaCount}" class="asphalt-width" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                </div>
+                <div class="form-group">
+                    <label for="asphalt-depth-${asphaltAreaCount}">Depth (in)</label>
+                    <input type="number" id="asphalt-depth-${asphaltAreaCount}" class="asphalt-depth" min="0" step="0.01" value="2" inputmode="numeric" pattern="[0-9]*">
+                </div>
+            `;
+            
+            document.getElementById('asphalt-areas-container').appendChild(areaContainer);
+            
+            // Add delete functionality
+            areaContainer.querySelector('.delete-area').addEventListener('click', function() {
+                areaContainer.remove();
+            });
+        });
+
+        // Calculate concrete
+        document.getElementById('calculate-concrete').addEventListener('click', function() {
+            const areas = document.querySelectorAll('#concrete-areas-container .area-item');
+            let totalVolume = 0;
+            let totalArea = 0;
+            
+            areas.forEach(area => {
+                const length = parseFloat(area.querySelector('.concrete-length').value) || 0;
+                const width = parseFloat(area.querySelector('.concrete-width').value) || 0;
+                const depth = parseFloat(area.querySelector('.concrete-depth').value) || 0;
+                
+                if (length > 0 && width > 0 && depth > 0) {
+                    const areaFt2 = length * width;
+                    totalArea += areaFt2;
+                    
+                    // Convert depth from inches to feet
+                    const depthFt = depth / 12;
+                    
+                    // Calculate volume in cubic feet
+                    const volumeFt3 = areaFt2 * depthFt;
+                    
+                    // Add to total volume
+                    totalVolume += volumeFt3;
+                }
+            });
+            
+            // Apply waste factor if advanced options are enabled
+            if (document.getElementById('concrete-advanced-toggle').checked) {
+                const wasteFactor = parseFloat(document.getElementById('waste-factor').value) || 0;
+                totalVolume *= (1 + wasteFactor / 100);
+            }
+            
+            // Convert from cubic feet to cubic yards (27 cubic feet = 1 cubic yard)
+            const cubicYards = totalVolume / 27;
+            
+            // Display results
+            document.getElementById('concrete-cubic-yards').textContent = cubicYards.toFixed(2) + ' yd³';
+            document.getElementById('concrete-total-area').textContent = totalArea.toFixed(2);
+            document.getElementById('concrete-results').style.display = 'block';
+        });
+
+        // Calculate asphalt
+        document.getElementById('calculate-asphalt').addEventListener('click', function() {
+            const areas = document.querySelectorAll('#asphalt-areas-container .area-item');
+            let totalVolume = 0;
+            let totalArea = 0;
+            
+            // Default density for hot mix asphalt in lb/ft³
+            let density = 145;
+            
+            // Update density if advanced options are enabled
+            if (document.getElementById('asphalt-advanced-toggle').checked) {
+                const asphaltType = document.getElementById('asphalt-type').value;
+                
+                switch(asphaltType) {
+                    case 'hot-mix':
+                        density = 145;
+                        break;
+                    case 'cold-mix':
+                        density = 140;
+                        break;
+                    case 'porous':
+                        density = 130;
+                        break;
+                }
+            }
+            
+            areas.forEach(area => {
+                const length = parseFloat(area.querySelector('.asphalt-length').value) || 0;
+                const width = parseFloat(area.querySelector('.asphalt-width').value) || 0;
+                const depth = parseFloat(area.querySelector('.asphalt-depth').value) || 0;
+                
+                if (length > 0 && width > 0 && depth > 0) {
+                    const areaFt2 = length * width;
+                    totalArea += areaFt2;
+                    
+                    // Convert depth from inches to feet
+                    const depthFt = depth / 12;
+                    
+                    // Calculate volume in cubic feet
+                    const volumeFt3 = areaFt2 * depthFt;
+                    
+                    // Add to total volume
+                    totalVolume += volumeFt3;
+                }
+            });
+            
+            // Apply compaction factor if advanced options are enabled
+            if (document.getElementById('asphalt-advanced-toggle').checked) {
+                const compactionFactor = parseFloat(document.getElementById('compaction-factor').value) || 0;
+                totalVolume *= (1 + compactionFactor / 100);
+            }
+            
+            // Calculate weight in pounds
+            const weightInPounds = totalVolume * density;
+            
+            // Convert to tons (2000 pounds = 1 ton)
+            const tons = weightInPounds / 2000;
+            
+            // Display results
+            document.getElementById('asphalt-tons').textContent = tons.toFixed(2) + ' tons';
+            document.getElementById('asphalt-total-area').textContent = totalArea.toFixed(2);
+            document.getElementById('asphalt-results').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
