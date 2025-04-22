@@ -315,7 +315,68 @@
             animation: slideDown 0.3s ease forwards;
         }
 
+        .toggle-switch {
+            display: flex;
+            background: var(--light);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+        }
 
+        .toggle-switch-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .toggle-switch-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            flex: 1 0 30%;
+            padding: 12px 6px;
+            text-align: center;
+            background: var(--light);
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .option-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .curb-calculator {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .standard-calculator {
+            animation: fadeIn 0.3s ease;
+        }
 
         @keyframes fadeIn {
             from {
@@ -364,10 +425,6 @@
                 box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
             }
         }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
     </style>
 </head>
 <body>
@@ -414,17 +471,56 @@
                         <div class="form-group">
                             <label>Area 1</label>
                         </div>
-                        <div class="form-group">
-                            <label for="concrete-length-1">Length (ft)</label>
-                            <input type="number" id="concrete-length-1" class="concrete-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                        
+                        <div class="toggle-switch" data-id="1">
+                            <div class="toggle-switch-btn active" data-type="standard" data-id="1">Standard</div>
+                            <div class="toggle-switch-btn" data-type="curb" data-id="1">Curb</div>
                         </div>
-                        <div class="form-group">
-                            <label for="concrete-width-1">Width (ft)</label>
-                            <input type="number" id="concrete-width-1" class="concrete-width" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                        
+                        <div class="standard-calculator" data-id="1">
+                            <div class="form-group">
+                                <label for="concrete-length-1">Length (ft)</label>
+                                <input type="number" id="concrete-length-1" class="concrete-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                            </div>
+                            <div class="form-group">
+                                <label for="concrete-width-1">Width (ft)</label>
+                                <input type="number" id="concrete-width-1" class="concrete-width" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                            </div>
+                            <div class="form-group">
+                                <label for="concrete-depth-1">Depth (in)</label>
+                                <input type="number" id="concrete-depth-1" class="concrete-depth" min="0" step="0.01" value="4" inputmode="numeric" pattern="[0-9]*">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="concrete-depth-1">Depth (in)</label>
-                            <input type="number" id="concrete-depth-1" class="concrete-depth" min="0" step="0.01" value="4" inputmode="numeric" pattern="[0-9]*">
+                        
+                        <div class="curb-calculator" data-id="1" style="display: none;">
+                            <div class="form-group">
+                                <label>Width (inches)</label>
+                                <div class="button-group width-group" data-id="1">
+                                    <div class="option-btn width-btn" data-value="4">4"</div>
+                                    <div class="option-btn width-btn" data-value="5">5"</div>
+                                    <div class="option-btn width-btn" data-value="6">6"</div>
+                                    <div class="option-btn width-btn" data-value="7">7"</div>
+                                    <div class="option-btn width-btn" data-value="8">8"</div>
+                                    <div class="option-btn width-btn" data-value="9">9"</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Depth (inches)</label>
+                                <div class="button-group depth-group" data-id="1">
+                                    <div class="option-btn depth-btn" data-value="16">16"</div>
+                                    <div class="option-btn depth-btn" data-value="18">18"</div>
+                                    <div class="option-btn depth-btn" data-value="20">20"</div>
+                                    <div class="option-btn depth-btn" data-value="22">22"</div>
+                                    <div class="option-btn depth-btn" data-value="24">24"</div>
+                                    <div class="option-btn depth-btn" data-value="26">26"</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="curb-length-1">Length (ft)</label>
+                                <input type="number" id="curb-length-1" class="curb-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -501,8 +597,6 @@
         </div>
     </div>
 
-
-
     <script>
         // Tab functionality
         document.querySelectorAll('.tab').forEach(tab => {
@@ -538,7 +632,58 @@
             }
         });
 
-
+        // Handle toggle between standard and curb calculators
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('toggle-switch-btn')) {
+                const areaId = e.target.dataset.id;
+                const type = e.target.dataset.type;
+                const toggleParent = e.target.parentElement;
+                
+                // Update toggle buttons
+                toggleParent.querySelectorAll('.toggle-switch-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+                
+                // Show/hide appropriate calculator
+                const areaItem = document.querySelector(`.area-item[data-id="${areaId}"]`);
+                
+                if (type === 'standard') {
+                    areaItem.querySelector(`.standard-calculator[data-id="${areaId}"]`).style.display = 'block';
+                    areaItem.querySelector(`.curb-calculator[data-id="${areaId}"]`).style.display = 'none';
+                } else {
+                    areaItem.querySelector(`.standard-calculator[data-id="${areaId}"]`).style.display = 'none';
+                    areaItem.querySelector(`.curb-calculator[data-id="${areaId}"]`).style.display = 'block';
+                }
+            }
+        });
+        
+        // Handle width and depth button selections
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('width-btn')) {
+                const areaId = e.target.parentElement.dataset.id;
+                
+                // Deselect other buttons in this group
+                document.querySelectorAll(`.width-group[data-id="${areaId}"] .width-btn`).forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                // Select this button
+                e.target.classList.add('selected');
+            }
+            
+            if (e.target.classList.contains('depth-btn')) {
+                const areaId = e.target.parentElement.dataset.id;
+                
+                // Deselect other buttons in this group
+                document.querySelectorAll(`.depth-group[data-id="${areaId}"] .depth-btn`).forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                // Select this button
+                e.target.classList.add('selected');
+            }
+        });
 
         // Add new concrete area
         let concreteAreaCount = 1;
@@ -554,26 +699,60 @@
                 <div class="form-group">
                     <label>Area ${concreteAreaCount}</label>
                 </div>
-                <div class="form-group">
-                    <label for="concrete-length-${concreteAreaCount}">Length (ft)</label>
-                    <input type="number" id="concrete-length-${concreteAreaCount}" class="concrete-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                
+                <div class="toggle-switch" data-id="${concreteAreaCount}">
+                    <div class="toggle-switch-btn active" data-type="standard" data-id="${concreteAreaCount}">Standard</div>
+                    <div class="toggle-switch-btn" data-type="curb" data-id="${concreteAreaCount}">Curb</div>
                 </div>
-                <div class="form-group">
-                    <label for="concrete-width-${concreteAreaCount}">Width (ft)</label>
-                    <input type="number" id="concrete-width-${concreteAreaCount}" class="concrete-width" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                
+                <div class="standard-calculator" data-id="${concreteAreaCount}">
+                    <div class="form-group">
+                        <label for="concrete-length-${concreteAreaCount}">Length (ft)</label>
+                        <input type="number" id="concrete-length-${concreteAreaCount}" class="concrete-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                    </div>
+                    <div class="form-group">
+                        <label for="concrete-width-${concreteAreaCount}">Width (ft)</label>
+                        <input type="number" id="concrete-width-${concreteAreaCount}" class="concrete-width" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                    </div>
+                    <div class="form-group">
+                        <label for="concrete-depth-${concreteAreaCount}">Depth (in)</label>
+                        <input type="number" id="concrete-depth-${concreteAreaCount}" class="concrete-depth" min="0" step="0.01" value="4" inputmode="numeric" pattern="[0-9]*">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="concrete-depth-${concreteAreaCount}">Depth (in)</label>
-                    <input type="number" id="concrete-depth-${concreteAreaCount}" class="concrete-depth" min="0" step="0.01" value="4" inputmode="numeric" pattern="[0-9]*">
+                
+                <div class="curb-calculator" data-id="${concreteAreaCount}" style="display: none;">
+                    <div class="form-group">
+                        <label>Width (inches)</label>
+                        <div class="button-group width-group" data-id="${concreteAreaCount}">
+                            <div class="option-btn width-btn" data-value="4">4"</div>
+                            <div class="option-btn width-btn" data-value="5">5"</div>
+                            <div class="option-btn width-btn" data-value="6">6"</div>
+                            <div class="option-btn width-btn" data-value="7">7"</div>
+                            <div class="option-btn width-btn" data-value="8">8"</div>
+                            <div class="option-btn width-btn" data-value="9">9"</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Depth (inches)</label>
+                        <div class="button-group depth-group" data-id="${concreteAreaCount}">
+                            <div class="option-btn depth-btn" data-value="16">16"</div>
+                            <div class="option-btn depth-btn" data-value="18">18"</div>
+                            <div class="option-btn depth-btn" data-value="20">20"</div>
+                            <div class="option-btn depth-btn" data-value="22">22"</div>
+                            <div class="option-btn depth-btn" data-value="24">24"</div>
+                            <div class="option-btn depth-btn" data-value="26">26"</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="curb-length-${concreteAreaCount}">Length (ft)</label>
+                        <input type="number" id="curb-length-${concreteAreaCount}" class="curb-length" min="0" step="0.01" inputmode="numeric" pattern="[0-9]*">
+                    </div>
                 </div>
             `;
             
             document.getElementById('concrete-areas-container').appendChild(areaContainer);
-            
-            // Add delete functionality
-            areaContainer.querySelector('.delete-area').addEventListener('click', function() {
-                areaContainer.remove();
-            });
         });
 
         // Add new asphalt area
@@ -605,11 +784,14 @@
             `;
             
             document.getElementById('asphalt-areas-container').appendChild(areaContainer);
-            
-            // Add delete functionality
-            areaContainer.querySelector('.delete-area').addEventListener('click', function() {
-                areaContainer.remove();
-            });
+        });
+
+        // Delete area functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-area')) {
+                const areaItem = e.target.closest('.area-item');
+                areaItem.remove();
+            }
         });
 
         // Calculate concrete
@@ -619,22 +801,52 @@
             let totalArea = 0;
             
             areas.forEach(area => {
-                const length = parseFloat(area.querySelector('.concrete-length').value) || 0;
-                const width = parseFloat(area.querySelector('.concrete-width').value) || 0;
-                const depth = parseFloat(area.querySelector('.concrete-depth').value) || 0;
+                const areaId = area.dataset.id;
+                const curbCalculator = area.querySelector(`.curb-calculator[data-id="${areaId}"]`);
+                const isStandardView = curbCalculator.style.display === 'none';
                 
-                if (length > 0 && width > 0 && depth > 0) {
-                    const areaFt2 = length * width;
-                    totalArea += areaFt2;
+                if (isStandardView) {
+                    // Standard calculation
+                    const length = parseFloat(area.querySelector('.concrete-length').value) || 0;
+                    const width = parseFloat(area.querySelector('.concrete-width').value) || 0;
+                    const depth = parseFloat(area.querySelector('.concrete-depth').value) || 0;
                     
-                    // Convert depth from inches to feet
-                    const depthFt = depth / 12;
+                    if (length > 0 && width > 0 && depth > 0) {
+                        const areaFt2 = length * width;
+                        totalArea += areaFt2;
+                        
+                        // Convert depth from inches to feet
+                        const depthFt = depth / 12;
+                        
+                        // Calculate volume in cubic feet
+                        const volumeFt3 = areaFt2 * depthFt;
+                        
+                        // Add to total volume
+                        totalVolume += volumeFt3;
+                    }
+                } else {
+                    // Curb calculation
+                    const length = parseFloat(area.querySelector('.curb-length').value) || 0;
+                    const widthBtn = area.querySelector('.width-btn.selected');
+                    const depthBtn = area.querySelector('.depth-btn.selected');
                     
-                    // Calculate volume in cubic feet
-                    const volumeFt3 = areaFt2 * depthFt;
-                    
-                    // Add to total volume
-                    totalVolume += volumeFt3;
+                    if (length > 0 && widthBtn && depthBtn) {
+                        const widthInches = parseFloat(widthBtn.dataset.value);
+                        const depthInches = parseFloat(depthBtn.dataset.value);
+                        
+                        // Convert width and depth from inches to feet
+                        const widthFt = widthInches / 12;
+                        const depthFt = depthInches / 12;
+                        
+                        const areaFt2 = length * widthFt;
+                        totalArea += areaFt2;
+                        
+                        // Calculate volume in cubic feet
+                        const volumeFt3 = length * widthFt * depthFt;
+                        
+                        // Add to total volume
+                        totalVolume += volumeFt3;
+                    }
                 }
             });
             
